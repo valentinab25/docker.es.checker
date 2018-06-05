@@ -1,5 +1,6 @@
 #!/bin/sh
 
+
 if [ -z "$ES_URL" ]; then 
    echo "No ElasticSearch received, exiting"
    exit 1;
@@ -13,6 +14,12 @@ PORT=${PORT:-12345}
 CHECK_PERIOD=${CHECK_PERIOD:-10}
 YELLOW_WAIT=${YELLOW_WAIT:-60}
 CLIENT_WAIT=${CLIENT_WAIT:-30}
+
+if [ -n "$ES_USER" ] && [ -n "$ES_PASSWORD" ]; then
+   CHECK_URL=$(  echo $ES_URL/_cluster/health | awk -F "://" -v user="$ES_USER" -v pass="$ES_PASSWORD"  '{print $1"://"user":"pass"@"$2 }' )
+else
+    CHECK_URL=$ES_URL/_cluster/health
+fi
 
 state="GREEN"
 
@@ -29,7 +36,7 @@ start_port()
 
 health_check()
 {
-  curl -i -s  $ES_URL/_cluster/health > temp
+  curl -i -s  $CHECK_URL > temp
 
 #check HTTP status
 
