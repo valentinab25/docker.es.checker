@@ -15,6 +15,10 @@ CHECK_PERIOD=${CHECK_PERIOD:-10}
 YELLOW_WAIT=${YELLOW_WAIT:-60}
 CLIENT_WAIT=${CLIENT_WAIT:-30}
 
+#remove trailing slash
+ES_URL=$(echo $ES_URL | sed 's/\/$//')
+
+
 if [ -n "$ES_USER" ] && [ -n "$ES_PASSWORD" ]; then
    CHECK_URL=$(  echo $ES_URL/_cluster/health | awk -F "://" -v user="$ES_USER" -v pass="$ES_PASSWORD"  '{print $1"://"user":"pass"@"$2 }' )
 else
